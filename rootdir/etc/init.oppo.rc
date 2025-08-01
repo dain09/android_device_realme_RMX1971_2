@@ -1,30 +1,38 @@
+#
+# Copyright (c) 2019-2021, The LineageOS Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Oppo/Realme-specific init script for rmx1971
+
 on boot
+    #
+    # Touchpanel configuration
+    #
     # Disable edge limit control interface
-    chmod 0660 /proc/touchpanel/oplus_tp_limit_enable
-    chmod 0660 /proc/touchpanel/oplus_tp_direction
-    chmod 0660 /proc/touchpanel/game_switch_enable
     chown system system /proc/touchpanel/oplus_tp_limit_enable
     chown system system /proc/touchpanel/oplus_tp_direction
     chown system system /proc/touchpanel/game_switch_enable
+    chmod 0660 /proc/touchpanel/oplus_tp_limit_enable
+    chmod 0660 /proc/touchpanel/oplus_tp_direction
+    chmod 0660 /proc/touchpanel/game_switch_enable
     write /proc/touchpanel/oplus_tp_limit_enable 0
     write /proc/touchpanel/oplus_tp_direction 1
     write /proc/touchpanel/game_switch_enable 1
 
-    # Enable OTG by default
-    write /sys/class/power_supply/usb/otg_switch 1
-
-    # TP FW Update
+    # Disable TP firmware update trigger
     write /proc/touchpanel/tp_fw_update 0
 
-    # Charger
-    chown system system /sys/class/power_supply/battery/mmi_charging_enable
-
-    # FPC Fingerprint 16051 config
+    #
+    # Fingerprint sensor configuration
+    #
+    # FPC Fingerprint (16051 variant)
     chown system system /sys/bus/platform/devices/soc:fpc_fpc1020*/irq
     chown system system /sys/bus/platform/devices/soc:fpc_fpc1020*/irq_enable
     chown system system /sys/bus/platform/devices/soc:fpc_fpc1020*/wakelock_enable
 
-    # FPC Fingerprint 16037 config
+    # FPC Fingerprint (16037 variant)
     chown system system /sys/bus/platform/devices/fpc_fpc1020*/irq
     chown system system /sys/bus/platform/devices/fpc_fpc1020*/irq_enable
     chown system system /sys/bus/platform/devices/fpc_fpc1020*/wakelock_enable
@@ -33,11 +41,11 @@ on boot
     chown system system /dev/silead_fp
     chmod 0666 /dev/silead_fp
 
-service vendor.sensors-hal-2-0-multihal /vendor/bin/hw/android.hardware.sensors@2.0-service.multihal
-    override
-    class hal
-    user system
-    group system wakelock context_hub input
-    writepid /dev/cpuset/system-background/tasks
-    capabilities BLOCK_SUSPEND
-    rlimit rtprio 10 10
+    #
+    # Miscellaneous hardware configuration
+    #
+    # Enable OTG by default
+    write /sys/class/power_supply/usb/otg_switch 1
+
+    # Set permissions for charger control
+    chown system system /sys/class/power_supply/battery/mmi_charging_enable
